@@ -132,10 +132,13 @@ export default function curdTests() {
       "find_and_modify",
     );
     await users.insertOne({ username: "counter", counter: 5 });
-    const updated = await users.findAndModify({ username: "counter" }, {
-      update: { $inc: { counter: 1 } },
-      new: true,
-    });
+    const updated = await users.findAndModify(
+      { username: "counter" },
+      {
+        update: { $inc: { counter: 1 } },
+        new: true,
+      },
+    );
 
     assert(updated !== undefined);
     assertEquals(updated.counter, 6);
@@ -148,9 +151,12 @@ export default function curdTests() {
       "find_and_modify",
     );
     await users.insertOne({ username: "delete", counter: 10 });
-    const updated = await users.findAndModify({ username: "delete" }, {
-      remove: true,
-    });
+    const updated = await users.findAndModify(
+      { username: "delete" },
+      {
+        remove: true,
+      },
+    );
 
     assert(updated !== undefined);
     assertEquals(updated.counter, 10);
@@ -246,6 +252,20 @@ export default function curdTests() {
     const users = db.collection("mongo_test_users");
     const count = await users.count({ username: "many" });
     assertEquals(count, 2);
+  });
+
+  testWithClient("testCountDocuments", async (client) => {
+    const db = client.database("test");
+    const users = db.collection("mongo_test_users");
+    const count = await users.countDocuments({ username: "many" });
+    assertEquals(count, 2);
+  });
+
+  testWithClient("testEstimatedDocumentCount", async (client) => {
+    const db = client.database("test");
+    const users = db.collection("mongo_test_users");
+    const count = await users.estimatedDocumentCount();
+    assertEquals(count, 4);
   });
 
   testWithClient("testAggregation", async (client) => {
